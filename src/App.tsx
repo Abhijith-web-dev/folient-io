@@ -25,6 +25,7 @@ const Templates = lazyWithRetry(() => import('./pages/Templates'));
 const Editor = lazyWithRetry(() => import('./pages/Editor'));
 const Docs = lazyWithRetry(() => import('./pages/Docs'));
 const Terms = lazyWithRetry(() => import('./pages/Terms'));
+const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
 
 // Premium, flat aesthetic route loader
 function RouteLoader() {
@@ -137,6 +138,7 @@ function App() {
             <Route path="/community" element={<Navigate to="/dashboard/community" replace />} />
             <Route path="/auth/callback" element={<CloudCallback />} />
             <Route path="/auth/vercel" element={<CloudCallback />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>
