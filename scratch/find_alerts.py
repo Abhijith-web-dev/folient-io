@@ -1,0 +1,4 @@
+with open(r'c:\Project\project backup\folient-builder\src\pages\Dashboard.tsx', 'r', encoding='utf-8') as f:
+    for i, line in enumerate(f, 1):
+        if 'alert(' in line:
+            print(f"{i}: {line.strip()}")

@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /templates
+Allow: /docs
+Allow: /terms
+Allow: /auth
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /editor
+Disallow: /auth/callback
+Disallow: /auth/vercel
+
+Sitemap: https://folient.dev/sitemap.xml
