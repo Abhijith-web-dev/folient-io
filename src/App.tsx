@@ -4,6 +4,7 @@ import CloudCallback from './modules/hosting/CloudCallback';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import Lenis from 'lenis';
+import { useAuthStore } from './store/useAuthStore';
 
 // Safe dynamic import wrapper to automatically resolve browser out-of-sync chunk loading/HMR errors
 const lazyWithRetry = (importFunc: () => Promise<any>) => {
@@ -39,8 +40,35 @@ function RouteLoader() {
   );
 }
 
+// Protected Route wrapper for authenticated users
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuthStore();
 
+  if (loading) {
+    return <RouteLoader />;
+  }
 
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// Public Route wrapper that redirects authenticated users to the dashboard
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuthStore();
+
+  if (loading) {
+    return <RouteLoader />;
+  }
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function App() {
   useEffect(() => {
@@ -99,11 +127,11 @@ function App() {
       <ErrorBoundary>
         <Suspense fallback={<RouteLoader />}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard/:tab?" element={<Dashboard />} />
-            <Route path="/templates" element={<Templates />} />
-            <Route path="/editor" element={<Editor />} />
+            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+            <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
+            <Route path="/dashboard/:tab?" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/templates" element={<PrivateRoute><Templates /></PrivateRoute>} />
+            <Route path="/editor" element={<PrivateRoute><Editor /></PrivateRoute>} />
             <Route path="/docs" element={<Docs />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/community" element={<Navigate to="/dashboard/community" replace />} />
