@@ -834,7 +834,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div 
+    <main 
       ref={dashboardContainerRef} 
       className="min-h-screen bg-[#F3F4F6] text-[#111111] font-sans flex items-center justify-center p-6 relative overflow-x-hidden"
     >
@@ -3305,6 +3305,6 @@ using (bucket_id = '${supabaseBucket}') with check (bucket_id = '${supabaseBucke
         </div>
       )}
 
-    </div>
+    </main>
   );
 }

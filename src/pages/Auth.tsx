@@ -117,7 +117,7 @@ export default function Auth() {
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen flex font-sans bg-slate-50">
+    <main ref={containerRef} className="min-h-screen flex font-sans bg-slate-50">
       
       {/* Left Column: Visual Showcase (Hidden on Mobile) */}
       <div className="hidden lg:flex w-1/2 bg-slate-950 p-16 flex-col justify-between relative overflow-hidden border-r border-slate-900">
@@ -293,6 +293,6 @@ export default function Auth() {
 
         </div>
       </div>
-    </div>
+    </main>
   );
 }

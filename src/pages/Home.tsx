@@ -786,7 +786,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans relative overflow-x-hidden pt-20">
+    <main className="min-h-screen bg-white text-slate-900 font-sans relative overflow-x-hidden pt-20">
       {/* Floating Glassmorphic Header */}
       <header className="fixed top-5 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-50 bg-white/75 backdrop-blur-md border border-slate-200/45 rounded-2xl py-3 px-6 md:px-8 flex items-center justify-between shadow-sm shadow-slate-100/50 transition-all duration-300 overflow-hidden">
         {/* Left Brand */}
@@ -2099,6 +2099,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
