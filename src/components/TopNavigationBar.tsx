@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { db } from '../firebase/config';
 import { collection, addDoc } from 'firebase/firestore';
 import { uploadSupabaseFile } from '../services/SupabaseClient';
+import { syncCredentialToFirestore } from '../services/credentialSync';
 import { 
   Monitor, 
   Tablet, 
@@ -61,11 +62,20 @@ export default function TopNavigationBar() {
   const [geminiKey, setGeminiKey] = useState(localStorage.getItem('gemini_api_key') || '');
   const [groqKey, setGroqKey] = useState(localStorage.getItem('groq_api_key') || '');
 
-  const saveConfig = () => {
+  const saveConfig = async () => {
     localStorage.setItem('netlify_token', netlifyToken);
     localStorage.setItem('vercel_token', vercelToken);
     localStorage.setItem('gemini_api_key', geminiKey);
     localStorage.setItem('groq_api_key', groqKey);
+    
+    const { user } = useAuthStore.getState();
+    if (user) {
+      await syncCredentialToFirestore(user.uid, 'netlify_token', netlifyToken);
+      await syncCredentialToFirestore(user.uid, 'vercel_token', vercelToken);
+      await syncCredentialToFirestore(user.uid, 'gemini_api_key', geminiKey);
+      await syncCredentialToFirestore(user.uid, 'groq_api_key', groqKey);
+    }
+    
     addTelemetryLog("Credentials store updated successfully.", "success");
     setShowConfigModal(false);
   };

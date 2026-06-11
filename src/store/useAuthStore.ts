@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { auth, googleProvider } from '../firebase/config';
 import { signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
+import { syncCredentialsFromFirestore, clearLocalCredentials } from '../services/credentialSync';
 
 interface AuthState {
   user: User | null;
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true });
     try {
       await fbSignOut(auth);
+      clearLocalCredentials();
     } catch (error) {
       console.error("Sign-Out Error:", error);
       set({ loading: false });
@@ -40,6 +42,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 // Initialize Firebase Auth listener immediately to sync state
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await syncCredentialsFromFirestore(user.uid);
+  } else {
+    clearLocalCredentials();
+  }
   useAuthStore.getState().setUser(user);
 });
+

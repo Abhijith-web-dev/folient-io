@@ -53,6 +53,7 @@ import { useSEO } from '../hooks/useSEO';
 import { useDeploymentEngine } from '../hooks/useDeploymentEngine';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { syncCredentialToFirestore } from '../services/credentialSync';
 
 
 export default function Dashboard() {
@@ -658,27 +659,38 @@ export default function Dashboard() {
   };
 
   // Connection Saves
-  const handleSaveKeys = (provider: 'gemini' | 'groq' | 'openrouter' | 'supabase' | 'netlify' | 'vercel') => {
+  const handleSaveKeys = async (provider: 'gemini' | 'groq' | 'openrouter' | 'supabase' | 'netlify' | 'vercel') => {
     if (provider === 'gemini') {
       localStorage.setItem('gemini_api_key', geminiKey);
+      if (user) await syncCredentialToFirestore(user.uid, 'gemini_api_key', geminiKey);
     } else if (provider === 'groq') {
       localStorage.setItem('groq_api_key', groqKey);
+      if (user) await syncCredentialToFirestore(user.uid, 'groq_api_key', groqKey);
     } else if (provider === 'openrouter') {
       localStorage.setItem('openrouter_api_key', openRouterKey);
+      if (user) await syncCredentialToFirestore(user.uid, 'openrouter_api_key', openRouterKey);
     } else if (provider === 'supabase') {
       localStorage.setItem('supabase_url', supabaseUrl);
       localStorage.setItem('supabase_anon_key', supabaseKey);
       localStorage.setItem('supabase_service_role_key', supabaseServiceKey);
       localStorage.setItem('supabase_bucket', supabaseBucket);
+      if (user) {
+        await syncCredentialToFirestore(user.uid, 'supabase_url', supabaseUrl);
+        await syncCredentialToFirestore(user.uid, 'supabase_anon_key', supabaseKey);
+        await syncCredentialToFirestore(user.uid, 'supabase_service_role_key', supabaseServiceKey);
+        await syncCredentialToFirestore(user.uid, 'supabase_bucket', supabaseBucket);
+      }
     } else if (provider === 'netlify') {
       localStorage.setItem('netlify_token', netlifyToken);
+      if (user) await syncCredentialToFirestore(user.uid, 'netlify_token', netlifyToken);
     } else if (provider === 'vercel') {
       localStorage.setItem('vercel_token', vercelToken);
+      if (user) await syncCredentialToFirestore(user.uid, 'vercel_token', vercelToken);
     }
-    showAlert(`${provider.toUpperCase()} credentials saved securely inside local storage.`, 'success');
+    showAlert(`${provider.toUpperCase()} credentials saved securely inside local storage and Firestore.`, 'success');
   };
 
-  const handleOneClickHostingConnect = () => {
+  const handleOneClickHostingConnect = async () => {
     const mockNetlifyToken = `npat_simulated_${Math.random().toString(36).substring(2, 10)}`;
     const mockVercelToken = `vpat_simulated_${Math.random().toString(36).substring(2, 10)}`;
     
@@ -688,16 +700,23 @@ export default function Dashboard() {
     localStorage.setItem('netlify_token', mockNetlifyToken);
     localStorage.setItem('vercel_token', mockVercelToken);
     
+    if (user) {
+      await syncCredentialToFirestore(user.uid, 'netlify_token', mockNetlifyToken);
+      await syncCredentialToFirestore(user.uid, 'vercel_token', mockVercelToken);
+    }
+    
     showAlert('Netlify & Vercel hosting providers connected seamlessly via one-click pipeline!', 'success');
   };
 
-  const handleDisconnect = (provider: 'netlify' | 'vercel') => {
+  const handleDisconnect = async (provider: 'netlify' | 'vercel') => {
     if (provider === 'netlify') {
       setNetlifyToken('');
       localStorage.removeItem('netlify_token');
+      if (user) await syncCredentialToFirestore(user.uid, 'netlify_token', '');
     } else if (provider === 'vercel') {
       setVercelToken('');
       localStorage.removeItem('vercel_token');
+      if (user) await syncCredentialToFirestore(user.uid, 'vercel_token', '');
     }
     showAlert(`Disconnected from ${provider.toUpperCase()} successfully.`, 'info');
   };
