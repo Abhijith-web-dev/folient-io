@@ -2613,7 +2613,7 @@ export default function CommunityTab({ showAlert }: CommunityTabProps) {
               </div>
             </div>
           </div>
-        );
+        , document.body);
       })()}
 
       {/* CREATOR HOVER CARD OVERLAY */}

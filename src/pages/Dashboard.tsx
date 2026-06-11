@@ -52,7 +52,7 @@ import CommunityTab from '../components/CommunityTab';
 import { useSEO } from '../hooks/useSEO';
 import { useDeploymentEngine } from '../hooks/useDeploymentEngine';
 import { db } from '../firebase/config';
-import { collection, onSnapshot, query, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 
 
 export default function Dashboard() {

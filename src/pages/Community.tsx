@@ -14,7 +14,14 @@ import {
   GitFork,
   MessageCircle,
   X,
-  Trash2
+  Trash2,
+  ExternalLink,
+  Download,
+  Music,
+  Film,
+  FileCode,
+  FileText,
+  File
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useProjectStore } from '../store/useProjectStore';
@@ -128,6 +135,72 @@ interface Comment {
   timestamp_epoch?: number;
 }
 
+const FILE_TYPE_MAP: Record<string, { type: string; label: string; color: string }> = {
+  PNG: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  JPG: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  JPEG: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  GIF: { type: 'image', label: 'GIF', color: 'text-purple-600 bg-purple-50' },
+  WEBP: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  AVIF: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  BMP: { type: 'image', label: 'Image', color: 'text-emerald-600 bg-emerald-50' },
+  ICO: { type: 'image', label: 'Icon', color: 'text-amber-600 bg-amber-50' },
+  SVG: { type: 'svg', label: 'SVG', color: 'text-orange-600 bg-orange-50' },
+  MP4: { type: 'video', label: 'Video', color: 'text-blue-600 bg-blue-50' },
+  WEBM: { type: 'video', label: 'Video', color: 'text-blue-600 bg-blue-50' },
+  MOV: { type: 'video', label: 'Video', color: 'text-blue-600 bg-blue-50' },
+  AVI: { type: 'video', label: 'Video', color: 'text-blue-600 bg-blue-50' },
+  MKV: { type: 'video', label: 'Video', color: 'text-blue-600 bg-blue-50' },
+  MP3: { type: 'audio', label: 'Audio', color: 'text-pink-600 bg-pink-50' },
+  WAV: { type: 'audio', label: 'Audio', color: 'text-pink-600 bg-pink-50' },
+  OGG: { type: 'audio', label: 'Audio', color: 'text-pink-600 bg-pink-50' },
+  FLAC: { type: 'audio', label: 'Audio', color: 'text-pink-600 bg-pink-50' },
+  AAC: { type: 'audio', label: 'Audio', color: 'text-pink-600 bg-pink-50' },
+  PDF: { type: 'document', label: 'PDF', color: 'text-red-600 bg-red-50' },
+  DOC: { type: 'document', label: 'Document', color: 'text-blue-700 bg-blue-50' },
+  DOCX: { type: 'document', label: 'Document', color: 'text-blue-700 bg-blue-50' },
+  TXT: { type: 'document', label: 'Text', color: 'text-slate-600 bg-slate-50' },
+  MD: { type: 'document', label: 'Markdown', color: 'text-slate-600 bg-slate-50' },
+  CSV: { type: 'document', label: 'CSV', color: 'text-teal-600 bg-teal-50' },
+  XLS: { type: 'document', label: 'Spreadsheet', color: 'text-green-700 bg-green-50' },
+  XLSX: { type: 'document', label: 'Spreadsheet', color: 'text-green-700 bg-green-50' },
+  JSON: { type: 'code', label: 'JSON', color: 'text-yellow-700 bg-yellow-50' },
+  JS: { type: 'code', label: 'JavaScript', color: 'text-yellow-600 bg-yellow-50' },
+  TS: { type: 'code', label: 'TypeScript', color: 'text-blue-600 bg-blue-50' },
+  HTML: { type: 'code', label: 'HTML', color: 'text-orange-600 bg-orange-50' },
+  CSS: { type: 'code', label: 'CSS', color: 'text-indigo-600 bg-indigo-50' },
+  PY: { type: 'code', label: 'Python', color: 'text-green-600 bg-green-50' },
+  WOFF: { type: 'font', label: 'Font', color: 'text-violet-600 bg-violet-50' },
+  WOFF2: { type: 'font', label: 'Font', color: 'text-violet-600 bg-violet-50' },
+  TTF: { type: 'font', label: 'Font', color: 'text-violet-600 bg-violet-50' },
+  OTF: { type: 'font', label: 'Font', color: 'text-violet-600 bg-violet-50' },
+  ZIP: { type: 'archive', label: 'Archive', color: 'text-amber-700 bg-amber-50' },
+  RAR: { type: 'archive', label: 'Archive', color: 'text-amber-700 bg-amber-50' },
+  '7Z': { type: 'archive', label: 'Archive', color: 'text-amber-700 bg-amber-50' },
+  TAR: { type: 'archive', label: 'Archive', color: 'text-amber-700 bg-amber-50' },
+  GZ: { type: 'archive', label: 'Archive', color: 'text-amber-700 bg-amber-50' },
+};
+
+function detectFileInfo(url: string): { type: string; format: string; label: string; color: string } {
+  const ext = url.split(/[?#]/)[0].split('.').pop()?.toUpperCase() || '';
+  const mapped = FILE_TYPE_MAP[ext];
+  if (mapped) return { ...mapped, format: ext };
+  return { type: 'other', format: ext || '?', label: 'File', color: 'text-gray-600 bg-gray-50' };
+}
+
+function getFileTypeIcon(fileType: string) {
+  switch (fileType) {
+    case 'image': return ImageIcon;
+    case 'svg': return FileCode;
+    case 'video': return Film;
+    case 'audio': return Music;
+    case 'document': return FileText;
+    case 'code': return FileCode;
+    case 'font': return FileText;
+    case 'archive': return File;
+    default: return File;
+  }
+}
+
 export default function Community() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -152,6 +225,9 @@ export default function Community() {
   // Clipboard success state
   const [copiedAssetId, setCopiedAssetId] = useState<string | null>(null);
   const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
+
+  // Lightbox State
+  const [previewAssetItem, setPreviewAssetItem] = useState<any>(null);
 
   // Modals
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
@@ -655,7 +731,10 @@ export default function Community() {
                     </p>
 
                     {/* Shared Image preview container */}
-                    <div className="mt-3 border border-[#ECEEF2] rounded-2xl overflow-hidden h-32 bg-[#F8F9FB] relative flex items-center justify-center">
+                    <div 
+                      className="mt-3 border border-[#ECEEF2] rounded-2xl overflow-hidden h-32 bg-[#F8F9FB] relative flex items-center justify-center cursor-pointer"
+                      onClick={() => setPreviewAssetItem(item)}
+                    >
                       <img 
                         src={item.imageUrl} 
                         alt={item.title} 
@@ -1168,6 +1247,128 @@ export default function Community() {
           </div>
         </div>
       )}
+
+      {/* ASSET PREVIEW LIGHTBOX */}
+      {previewAssetItem && (() => {
+        const fi = detectFileInfo(previewAssetItem.assetUrl || previewAssetItem.imageUrl);
+        const resolvedType = previewAssetItem.fileType || fi.type;
+        const resolvedFormat = previewAssetItem.format || fi.format;
+        const typeInfo = FILE_TYPE_MAP[resolvedFormat] || { label: fi.label, color: fi.color };
+
+        return createPortal(
+          <div className="fixed inset-0 z-[100] bg-[#000000]/80 backdrop-blur-sm flex items-center justify-center p-6 animate-[fade-in_0.15s_ease-out]">
+            <div className="bg-white border border-[#ECEEF2] rounded-[32px] shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#ECEEF2] shrink-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase shrink-0 ${typeInfo.color}`}>
+                    .{resolvedFormat}
+                  </span>
+                  <h3 className="text-sm font-bold text-[#111111] truncate">{previewAssetItem.title}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={previewAssetItem.assetUrl || previewAssetItem.imageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-[#F8F9FB] hover:bg-[#F3F4F6] rounded-xl text-[10px] text-gray-700 font-bold cursor-pointer transition-colors border border-[#ECEEF2] leading-none"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open URL</span>
+                  </a>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(previewAssetItem.assetUrl || previewAssetItem.imageUrl);
+                      setCopiedAssetId(previewAssetItem.id);
+                      setTimeout(() => setCopiedAssetId(null), 2000);
+                    }}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-[#F8F9FB] hover:bg-[#F3F4F6] rounded-xl text-[10px] text-gray-700 font-bold cursor-pointer transition-colors border border-[#ECEEF2]"
+                  >
+                    {copiedAssetId === previewAssetItem.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedAssetId === previewAssetItem.id ? 'Copied' : 'Copy link'}</span>
+                  </button>
+                  <button
+                    onClick={() => setPreviewAssetItem(null)}
+                    className="p-1.5 hover:bg-[#F8F9FB] rounded-xl text-gray-400 hover:text-[#111111] border-none bg-transparent cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Lightbox content renderer based on type */}
+              <div className="flex-1 overflow-y-auto bg-[#FAFBFD] p-6 flex items-center justify-center min-h-0">
+                {resolvedType === 'image' || resolvedType === 'svg' ? (
+                  <img
+                    src={previewAssetItem.imageUrl || previewAssetItem.assetUrl}
+                    alt={previewAssetItem.title}
+                    className="max-w-full max-h-[50vh] object-contain rounded-2xl shadow-lg border border-[#ECEEF2]"
+                  />
+                ) : resolvedType === 'video' ? (
+                  <video
+                    src={previewAssetItem.assetUrl}
+                    className="max-w-full max-h-[50vh] rounded-2xl shadow-lg border border-[#ECEEF2]"
+                    controls
+                    autoPlay
+                  />
+                ) : resolvedType === 'audio' ? (
+                  <div className="flex flex-col items-center gap-4 py-8">
+                    <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                      <Music className="w-8 h-8 text-white" />
+                    </div>
+                    <audio src={previewAssetItem.assetUrl} controls autoPlay className="w-72" />
+                    <span className="text-[10px] text-slate-400 font-mono">Autoplaying media attachment</span>
+                  </div>
+                ) : resolvedType === 'document' && resolvedFormat === 'PDF' ? (
+                  <iframe
+                    src={previewAssetItem.assetUrl}
+                    title={previewAssetItem.title}
+                    className="w-full h-[55vh] rounded-2xl shadow-lg border border-[#ECEEF2]"
+                  />
+                ) : (
+                  <div className="text-center py-10 flex flex-col items-center gap-4 bg-white border border-[#ECEEF2] rounded-3xl p-8 max-w-sm shadow-sm">
+                    <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center">
+                      {(() => {
+                        const TypeIcon = getFileTypeIcon(resolvedType);
+                        return <TypeIcon className="w-8 h-8 text-slate-500" />;
+                      })()}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#111111]">Preview Unavailable</h4>
+                      <p className="text-[10px] text-[#6B7280] mt-1 leading-relaxed">
+                        This file format ({resolvedFormat}) cannot be previewed directly in the browser. You can copy the URL or download the file directly.
+                      </p>
+                    </div>
+                    <a
+                      href={previewAssetItem.assetUrl}
+                      download
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 px-5 py-2 bg-[#111111] hover:bg-black text-white text-xs font-bold rounded-xl border-none cursor-pointer transition-colors shadow-sm"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download File</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer metadata */}
+              <div className="px-6 py-3 border-t border-[#ECEEF2] flex items-center justify-between text-[9px] text-slate-500 font-mono shrink-0">
+                <div className="flex items-center gap-4">
+                  <span>By <strong className="text-[#111111]">{previewAssetItem.creator}</strong></span>
+                  <span>{previewAssetItem.category}</span>
+                  {previewAssetItem.fileSize && <span>{previewAssetItem.fileSize}</span>}
+                </div>
+                <span className="flex items-center gap-1">
+                  <Download className="w-3 h-3" /> {previewAssetItem.downloads} downloads
+                </span>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      })()}
     </div>
   );
 }
