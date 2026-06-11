@@ -52,7 +52,7 @@ import CommunityTab from '../components/CommunityTab';
 import { useSEO } from '../hooks/useSEO';
 import { useDeploymentEngine } from '../hooks/useDeploymentEngine';
 import { db } from '../firebase/config';
-import { collection, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import { syncCredentialToFirestore } from '../services/credentialSync';
 
 
@@ -135,6 +135,7 @@ export default function Dashboard() {
   const [githubUrl, setGithubUrl] = useState('https://github.com');
   const [linkedinUrl, setLinkedinUrl] = useState('https://linkedin.com');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [streakCount, setStreakCount] = useState(1);
 
   // Load user profile details from Firestore user_profiles
   useEffect(() => {
@@ -153,12 +154,56 @@ export default function Dashboard() {
         if (data.publicShowcase !== undefined) setPublicShowcase(data.publicShowcase);
         if (data.githubUrl) setGithubUrl(data.githubUrl);
         if (data.linkedinUrl) setLinkedinUrl(data.linkedinUrl);
+        if (data.streakCount !== undefined) setStreakCount(data.streakCount);
       }
     }, (err) => {
       console.warn("Failed to load user profile:", err);
     });
 
     return () => unsubscribeProfile();
+  }, [user]);
+
+  // Compute and persist daily active streak in Firestore
+  useEffect(() => {
+    if (!user) return;
+    if (db.app.options.apiKey?.includes('placeholder')) return;
+
+    const updateStreak = async () => {
+      const userProfileRef = doc(db, 'user_profiles', user.uid);
+      const docSnap = await getDoc(userProfileRef);
+      const todayStr = new Date().toDateString(); // e.g. "Thu Jun 11 2026"
+      
+      let currentStreak = 1;
+      let lastActiveDate = "";
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        currentStreak = data.streakCount || 1;
+        lastActiveDate = data.lastActiveDate || "";
+      }
+
+      if (lastActiveDate === todayStr) {
+        return;
+      }
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toDateString();
+
+      if (lastActiveDate === yesterdayStr) {
+        currentStreak += 1;
+      } else {
+        currentStreak = 1;
+      }
+
+      await setDoc(userProfileRef, {
+        streakCount: currentStreak,
+        lastActiveDate: todayStr,
+        updatedAt: Date.now()
+      }, { merge: true });
+    };
+
+    updateStreak().catch(err => console.warn("Failed to update streak:", err));
   }, [user]);
 
   const handleSaveProfile = async () => {
@@ -469,8 +514,6 @@ export default function Dashboard() {
 
   // Dynamic portfolio analytics computed in real-time from IndexedDB
   const activeProjectsCount = projects.length;
-  const uniqueEditDays = new Set(projects.map(p => new Date(p.updatedAt).toDateString())).size;
-  const compileStreak = activeProjectsCount === 0 ? 0 : Math.max(1, uniqueEditDays);
 
   const timeRangeMultiplier = timeRange === '7d' ? 1.0 : timeRange === '14d' ? 0.97 : 1.03;
   const computedSuccessRate = activeProjectsCount > 0 
@@ -1335,7 +1378,7 @@ export default function Dashboard() {
                         <Flame className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-[#111111] font-sans">You're on a {compileStreak}-day streak</h4>
+                        <h4 className="text-xs font-bold text-[#111111] font-sans">You're on a {streakCount}-day streak</h4>
                         <p className="text-[10px] text-[#6B7280] font-sans font-medium">Keep compiling to lock achievements.</p>
                       </div>
                     </div>

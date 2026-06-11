@@ -11,6 +11,8 @@ export interface Project {
   platformTarget?: string;
   netlifySiteId?: string;
   vercelProjectId?: string;
+  ast?: string;
+  css?: string;
 }
 
 export interface Section {

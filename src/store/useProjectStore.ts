@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { folientDb, type Project, type Section } from '../db/dexie';
 import { parseTemplateHtml } from './useEditorStore';
+import { useAuthStore } from './useAuthStore';
+import { syncProjectsWithFirestore, syncSingleProjectToCloud, deleteProjectFromCloud } from '../services/portfolioSync';
 
 interface ProjectState {
   projects: Project[];
@@ -22,11 +24,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   loadAllProjects: async () => {
     set({ loading: true });
     try {
+      const { user } = useAuthStore.getState();
+      if (user) {
+        await syncProjectsWithFirestore(user.uid);
+      }
       const projects = await folientDb.projects.reverse().toArray();
       set({ projects, loading: false });
     } catch (error) {
       console.error("Failed to load projects:", error);
-      set({ loading: false });
+      set({ projects: [], loading: false });
     }
   },
 
@@ -45,14 +51,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       }
     }
 
-    const projectId = await folientDb.projects.add({
+    const newProject: Project = {
       name,
       createdAt: timestamp,
       updatedAt: timestamp,
       activeTemplateId: templateId,
       ast: parsedAst ? JSON.stringify(parsedAst) : undefined,
       css: unifiedCss || undefined
-    } as any);
+    } as any;
+
+    const projectId = await folientDb.projects.add(newProject);
+    newProject.id = projectId;
 
     if (initialSections && initialSections.length > 0) {
       const sectionsToInsert = initialSections.map(s => ({
@@ -60,6 +69,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         projectId
       }));
       await folientDb.sections.bulkAdd(sectionsToInsert);
+    }
+
+    const { user } = useAuthStore.getState();
+    if (user) {
+      await syncSingleProjectToCloud(newProject, user.uid);
     }
 
     await get().loadAllProjects();
@@ -88,12 +102,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!project) return;
 
     const timestamp = Date.now();
-    const newProjectId = await folientDb.projects.add({
+    const duplicatedProj: Project = {
       name: `${project.name} (Copy)`,
       createdAt: timestamp,
       updatedAt: timestamp,
-      activeTemplateId: project.activeTemplateId
-    });
+      activeTemplateId: project.activeTemplateId,
+      ast: project.ast,
+      css: project.css
+    } as any;
+
+    const newProjectId = await folientDb.projects.add(duplicatedProj);
+    duplicatedProj.id = newProjectId;
 
     const sections = await folientDb.sections.where('projectId').equals(id).toArray();
     if (sections.length > 0) {
@@ -107,12 +126,23 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       await folientDb.sections.bulkAdd(duplicatedSections);
     }
 
+    const { user } = useAuthStore.getState();
+    if (user) {
+      await syncSingleProjectToCloud(duplicatedProj, user.uid);
+    }
+
     await get().loadAllProjects();
   },
 
   deleteProject: async (id) => {
     await folientDb.projects.delete(id);
     await folientDb.sections.where('projectId').equals(id).delete();
+    
+    const { user } = useAuthStore.getState();
+    if (user) {
+      await deleteProjectFromCloud(id, user.uid);
+    }
+
     await get().loadAllProjects();
     if (get().activeProject?.id === id) {
       set({ activeProject: null });
@@ -121,9 +151,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   updateProjectName: async (id, name) => {
     await folientDb.projects.update(id, { name, updatedAt: Date.now() });
+    const updated = await folientDb.projects.get(id);
+    
+    const { user } = useAuthStore.getState();
+    if (user && updated) {
+      await syncSingleProjectToCloud(updated, user.uid);
+    }
+
     await get().loadAllProjects();
     if (get().activeProject?.id === id) {
-      const updated = await folientDb.projects.get(id);
       set({ activeProject: updated || null });
     }
   }
