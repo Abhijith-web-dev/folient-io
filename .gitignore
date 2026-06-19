@@ -30,5 +30,7 @@ dist-ssr
 *.md
 !README.md
 !readme.md
+!project details doc/*.md
+!Project-Doc/*.md
 UIUX/
 UI/UX/
