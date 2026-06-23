@@ -195,7 +195,7 @@ export default function PropertyPanel() {
     return (
       <aside className="w-full h-full bg-white border border-[#ECEEF2] rounded-[24px] flex flex-col items-center justify-center p-6 text-center select-none z-30 shadow-[0_8px_24px_rgba(0,0,0,0.03)]">
         <div className="w-12 h-12 rounded-2xl bg-[#F8F9FB] border border-[#ECEEF2] flex items-center justify-center text-[#6B7280] mb-4 animate-pulse">
-          <Settings className="w-5 h-5 text-[#FF5733]" />
+          <Settings className="w-5 h-5 text-[#6366F1]" />
         </div>
         <h4 className="text-xs font-bold text-[#111111] font-mono uppercase tracking-widest">Property Inspector</h4>
         <p className="text-[10px] text-[#6B7280] max-w-[160px] leading-relaxed mt-2">
@@ -290,7 +290,7 @@ export default function PropertyPanel() {
     <aside className="w-full h-full bg-white border border-[#ECEEF2] rounded-[24px] flex flex-col select-none overflow-y-auto z-30 text-left scrollbar-thin shadow-[0_8px_24px_rgba(0,0,0,0.03)]">
       <div className="h-12 bg-white px-4 border-b border-[#ECEEF2] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <Settings className="w-4 h-4 text-[#FF5733]" />
+          <Settings className="w-4 h-4 text-[#6366F1]" />
           <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-[#111111]">Properties</span>
         </div>
         <span className="text-[9px] font-mono text-[#6B7280] uppercase tracking-widest font-bold">
@@ -306,7 +306,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection('content')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Maximize className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Maximize className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Content & Presets</span>
           </button>
           
@@ -318,7 +318,7 @@ export default function PropertyPanel() {
                   <textarea 
                     value={contentVal}
                     onChange={e => { setContentVal(e.target.value); updateNodeContent(activeNode.id, e.target.value); }}
-                    className="w-full h-16 bg-[#F8F9FB] border border-[#ECEEF2] rounded-lg p-2.5 text-xs text-[#111111] placeholder-[#9CA3AF] focus:outline-none focus:border-[#FF5733] transition-colors"
+                    className="w-full h-16 bg-[#F8F9FB] border border-[#ECEEF2] rounded-lg p-2.5 text-xs text-[#111111] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6366F1] transition-colors"
                     placeholder="Insert text content payload..."
                   />
                 </div>
@@ -348,7 +348,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'typo' ? 'content' : 'typo')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Type className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Type className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Typography Settings</span>
           </button>
           
@@ -377,7 +377,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'box' ? 'content' : 'box')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Maximize className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Maximize className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Spacing & Borders</span>
           </button>
           
@@ -404,7 +404,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'layout' ? 'content' : 'layout')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Layout className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Layout className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Layout & Flexbox</span>
           </button>
           
@@ -431,7 +431,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'bg' ? 'content' : 'bg')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Paintbrush className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Paintbrush className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Background settings</span>
           </button>
           
@@ -460,7 +460,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'anim' ? 'content' : 'anim')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Play className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>Entry Animations</span>
           </button>
           
@@ -483,7 +483,7 @@ export default function PropertyPanel() {
             onClick={() => setExpandedSection(expandedSection === 'ai' ? 'content' : 'ai')}
             className="w-full px-4 py-3 bg-[#F8F9FB] hover:bg-[#ECEEF2] border-none text-xs font-bold text-[#111111] font-mono flex items-center gap-2 text-left cursor-pointer"
           >
-            <Sparkle className="w-3.5 h-3.5 text-[#FF5733]" />
+            <Sparkle className="w-3.5 h-3.5 text-[#6366F1]" />
             <span>AI Design suggestions</span>
           </button>
           
@@ -493,7 +493,7 @@ export default function PropertyPanel() {
                 value={aiPrompt}
                 disabled={isRestyling}
                 onChange={e => setAiPrompt(e.target.value)}
-                className="w-full h-16 bg-[#F8F9FB] border border-[#ECEEF2] rounded-lg p-2.5 text-xs text-[#111111] placeholder-[#9CA3AF] focus:outline-none focus:border-[#FF5733] transition-colors"
+                className="w-full h-16 bg-[#F8F9FB] border border-[#ECEEF2] rounded-lg p-2.5 text-xs text-[#111111] placeholder-[#9CA3AF] focus:outline-none focus:border-[#6366F1] transition-colors"
                 placeholder="e.g. make this more modern, glassmorphic card style, glowing borders..."
               />
               <button 
@@ -503,12 +503,12 @@ export default function PropertyPanel() {
               >
                 {isRestyling ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-[#FF5733]" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#6366F1]" />
                     <span>Restyling...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 text-[#FF5733]" />
+                    <Sparkles className="w-4 h-4 text-[#6366F1]" />
                     <span>AI Re-style Element</span>
                   </>
                 )

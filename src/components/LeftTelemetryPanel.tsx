@@ -22,9 +22,9 @@ export default function LeftTelemetryPanel() {
                 : 'text-[#6B7280] hover:text-[#111111] bg-transparent'
             }`}
           >
-            {tab === 'sections' && <Layers className="w-3 h-3 text-[#FF5733]" />}
-            {tab === 'layers' && <FileCode className="w-3 h-3 text-[#FF5733]" />}
-            {tab === 'assets' && <Image className="w-3 h-3 text-[#FF5733]" />}
+            {tab === 'sections' && <Layers className="w-3 h-3 text-[#6366F1]" />}
+            {tab === 'layers' && <FileCode className="w-3 h-3 text-[#6366F1]" />}
+            {tab === 'assets' && <Image className="w-3 h-3 text-[#6366F1]" />}
             {tab === 'telemetry' && <Activity className="w-3 h-3 text-[#22C55E]" />}
             <span>{tab}</span>
           </button>

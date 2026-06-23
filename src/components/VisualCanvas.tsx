@@ -50,20 +50,20 @@ export default function VisualCanvas() {
     }
     
     body.edit-mode [data-node-id]:hover {
-      outline: 1.5px dashed rgba(255, 87, 51, 0.4);
+      outline: 1.5px dashed rgba(99, 102, 241, 0.4);
       outline-offset: 1px;
     }
 
     body.edit-mode .selected-node {
-      outline: 2px solid #FF5733 !important;
+      outline: 2px solid #6366F1 !important;
       outline-offset: 2px;
-      box-shadow: 0 0 12px rgba(255, 87, 51, 0.15);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
     }
 
     /* Tooltip overlay styling */
     .folient-hover-label {
       position: absolute;
-      background: #FF5733;
+      background: #6366F1;
       color: white;
       font-family: monospace;
       font-size: 8px;
@@ -330,21 +330,21 @@ export default function VisualCanvas() {
             {isCanvasLoading && (
               <div className="absolute inset-0 bg-zinc-950 flex flex-col items-center justify-center gap-3 z-30 transition-all duration-300">
                 <div className="flex flex-col items-center gap-2">
-                  <div className="w-6 h-6 border-2 border-zinc-800 border-t-[#FF5733] rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-2 border-zinc-800 border-t-[#6366F1] rounded-full animate-spin"></div>
                   <span className="text-[9px] font-mono tracking-widest uppercase text-zinc-500 animate-pulse">
                     Syncing layout
                   </span>
                 </div>
               </div>
             )}
-
+ 
             {isGenerating && (
               <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-xs flex flex-col items-center justify-center gap-4 z-20 pointer-events-auto">
-                <div className="w-64 h-32 rounded-2xl border-2 border-dashed border-[#FF5733] bg-zinc-900/50 p-4 flex flex-col justify-between items-center relative overflow-hidden animate-[pulse_2s_infinite]">
-                  <div className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-[#FF5733]/5 to-transparent h-full animate-[shimmer_1.5s_infinite] -skew-x-12" />
+                <div className="w-64 h-32 rounded-2xl border-2 border-dashed border-[#6366F1] bg-zinc-900/50 p-4 flex flex-col justify-between items-center relative overflow-hidden animate-[pulse_2s_infinite]">
+                  <div className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-[#6366F1]/5 to-transparent h-full animate-[shimmer_1.5s_infinite] -skew-x-12" />
                   <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest font-bold">Inference Stream Active</div>
-                  <div className="w-8 h-8 rounded-full border-2 border-[#FF5733] border-t-transparent animate-spin" />
-                  <div className="text-[10px] font-mono text-[#FF5733] uppercase tracking-widest font-bold animate-pulse">Mutating AST Nodes...</div>
+                  <div className="w-8 h-8 rounded-full border-2 border-[#6366F1] border-t-transparent animate-spin" />
+                  <div className="text-[10px] font-mono text-[#6366F1] uppercase tracking-widest font-bold animate-pulse">Mutating AST Nodes...</div>
                 </div>
               </div>
             )}

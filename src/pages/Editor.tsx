@@ -142,7 +142,7 @@ export default function Editor() {
   ]);
 
   return (
-    <div className="w-screen h-screen bg-[#F3F4F6] flex flex-col text-[#111111] overflow-hidden font-sans select-none p-4 gap-4">
+    <main className="w-screen h-screen bg-[#F3F4F6] flex flex-col text-[#111111] overflow-hidden font-sans select-none p-4 gap-4">
       <div className="editor-header w-full shrink-0 relative z-50">
         <TopNavigationBar />
       </div>
@@ -200,6 +200,6 @@ export default function Editor() {
         </div>
       </div>
       <AiChatbox />
-    </div>
+    </main>
   );
 }
